@@ -99,9 +99,9 @@ def substrings(string)
   chars[0...chars.length].each_with_index do |el, idx|
     sub_el = el
     sub_strings << sub_el
-    chars[idx+1...chars.length].each_with_index do |l, i|
-        sub_el += l
-        sub_strings << sub_el
+      chars[idx+1...chars.length].each_with_index do |l, i|
+          sub_el += l
+          sub_strings << sub_el
     end
   end
   sub_strings
@@ -109,7 +109,7 @@ end
 
 def subwords(word, dictionary)
   sub_strings = substrings(word)
-  valid_words = sub_strings.select {|el| dictionary.include?(el)}
+  valid_words = sub_strings.uniq.select {|el| dictionary.include?(el)}
 end
 
 # ### Doubler
@@ -117,6 +117,7 @@ end
 # array with the original elements multiplied by two.
 
 def doubler(array)
+  array.map {|el| el*2}
 end
 
 # ### My Each
@@ -144,6 +145,10 @@ end
 
 class Array
   def my_each(&prc)
+    self.length.times do |i|
+      yield(self[i])
+    end
+    self
   end
 end
 
@@ -162,12 +167,27 @@ end
 
 class Array
   def my_map(&prc)
+    self2 = []
+    self.length.times do |i|
+      self2[i] = yield(self[i])
+    end
+    self2
   end
 
   def my_select(&prc)
+    selected = []
+      self.each do |el|
+        selected << el if yield(el)
+      end
+      selected
   end
 
   def my_inject(&blk)
+    result = self.shift
+    self.my_each do |el|
+        result = yield(result, el)
+      end
+  result
   end
 end
 
@@ -181,4 +201,5 @@ end
 # ```
 
 def concatenate(strings)
+  strings.inject {|accumulator, el| accumulator += el }
 end

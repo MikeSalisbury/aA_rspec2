@@ -4,5 +4,5 @@ def measure(iteration = 1)
     yield
   end
   t2 = Time.now
-  (t2 - t1)/iteration
+  average_time = (t2 - t1)/iteration
 end
