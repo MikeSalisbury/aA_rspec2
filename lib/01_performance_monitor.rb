@@ -1,8 +1,11 @@
-def measure(iteration = 1)
-  t1 = Time.now
-  iteration.times do
+def measure(iterator = 1)
+  start_time = Time.now
+
+  iterator.times do
     yield
   end
-  t2 = Time.now
-  average_time = (t2 - t1)/iteration
+
+  final_time = Time.now
+
+  (final_time - start_time) / iterator
 end

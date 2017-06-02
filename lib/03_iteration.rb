@@ -47,35 +47,45 @@ end
 # http://stackoverflow.com/questions/827649/what-is-the-ruby-spaceship-operator
 
 class Array
-  def bubble_sort!
+
+  def bubble_sort!(&prc)
+    return self if self == []
+
     sorted = false
+
     until sorted == true
       sorted = true
+
       if block_given?
-        self[0...self.length-1].each_index do |i|
-        if yield(self[i], self[i+1]) == 1
-          self[i], self[i+1] = self[i+1], self[i]
-          sorted = false
+        self[0...-1].each_index do |idx|
+
+          if yield(self[idx], self[idx+1]) == 1
+            self[idx], self[idx+1] = self[idx+1], self[idx]
+            sorted = false
+          end
         end
-        end
+
       else
-        self[0...self.length-1].each_index do |idx|
-        if self[idx] > self[idx+1]
+        self.each_index do |idx|
+        if (self[idx] <=> self[idx+1]) == 1
           self[idx], self[idx+1] = self[idx+1], self[idx]
           sorted = false
         end
-      end
+        end
       end
     end
-  self
+
+      self
   end
 
   def bubble_sort(&prc)
-    dup_self = self.dup
+    self2 = self.dup
+    # self2.bubble_sort!(&prc)
+
     if block_given?
-      dup_self.bubble_sort!(yield)
+      self2.bubble_sort!(yield)
     else
-      dup_self.bubble_sort!
+      self2.bubble_sort!
     end
   end
 end
@@ -94,22 +104,28 @@ end
 # words).
 
 def substrings(string)
-  sub_strings = []
-  chars = string.chars
-  chars[0...chars.length].each_with_index do |el, idx|
-    sub_el = el
-    sub_strings << sub_el
-      chars[idx+1...chars.length].each_with_index do |l, i|
-          sub_el += l
-          sub_strings << sub_el
+  letters = string.chars
+
+  string_array = []
+  letters[0...-1].each_with_index do |letter, idx|
+
+    current_letter = letter
+    string_array << current_letter
+
+    letters[idx+1..-1].each do |el|
+
+      current_letter += el
+      string_array << current_letter
     end
   end
-  sub_strings
+
+string_array
 end
 
 def subwords(word, dictionary)
   sub_strings = substrings(word)
-  valid_words = sub_strings.uniq.select {|el| dictionary.include?(el)}
+  real_sub_strings = sub_strings.select {|el| dictionary.include?(el)}.uniq
+
 end
 
 # ### Doubler
@@ -117,7 +133,7 @@ end
 # array with the original elements multiplied by two.
 
 def doubler(array)
-  array.map {|el| el*2}
+  array.map {|num| num * 2}
 end
 
 # ### My Each
@@ -145,7 +161,7 @@ end
 
 class Array
   def my_each(&prc)
-    self.length.times do |i|
+    (self.length).times do |i|
       yield(self[i])
     end
     self
@@ -168,26 +184,23 @@ end
 class Array
   def my_map(&prc)
     self2 = []
-    self.length.times do |i|
-      self2[i] = yield(self[i])
-    end
+    self.my_each {|el| self2 << yield(el)}
     self2
   end
 
   def my_select(&prc)
-    selected = []
-      self.each do |el|
-        selected << el if yield(el)
-      end
-      selected
+    self2 = []
+    self.my_each {|el| self2 << el if yield(el)}
+    self2
   end
 
   def my_inject(&blk)
-    result = self.shift
+
+    self2 = self.shift
     self.my_each do |el|
-        result = yield(result, el)
-      end
-  result
+      self2 = yield(self2, el)
+    end
+  self2
   end
 end
 
@@ -201,5 +214,6 @@ end
 # ```
 
 def concatenate(strings)
-  strings.inject {|accumulator, el| accumulator += el }
+  # result = strings.inject(:+)
+  strings.inject {|accumulator, el| accumulator += el}
 end

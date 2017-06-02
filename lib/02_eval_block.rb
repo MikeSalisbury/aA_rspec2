@@ -49,6 +49,6 @@ def eval_block(*args)
   if block_given?
     yield(*args)
   else
-    raise "No Block Given"
+    raise "NO BLOCK GIVEN"
   end
 end
